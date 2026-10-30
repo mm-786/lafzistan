@@ -1,0 +1,954 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LAFZISTAN</title>
+
+<!-- SWIPER CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+>
+
+<style>
+
+/* =====================================
+   GLOBAL
+===================================== */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #191919;
+  font-family: Arial, sans-serif;
+}
+
+#lafzistan-app {
+  width: 100%;
+  background: #191919;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* =====================================
+   LOADER
+===================================== */
+
+.lafzistan-loader {
+  width: 100%;
+  min-height: 420px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #191919;
+}
+
+.loader-content {
+  width: 85%;
+  max-width: 300px;
+}
+
+.loader-spinner {
+  width: 45px;
+  height: 45px;
+  border: 3px solid #444;
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  margin: 0 auto 22px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-content h2 {
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+}
+
+.loader-content p {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.loader-progress {
+  width: 100%;
+  height: 3px;
+  background: #444;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0 10px;
+}
+
+.loader-progress-fill {
+  height: 100%;
+  background: #fff;
+  transition: width 0.3s ease;
+}
+
+.loader-content span {
+  color: #aaa;
+  font-size: 12px;
+}
+
+
+/* =====================================
+   ERROR
+===================================== */
+
+.lafzistan-error {
+  min-height: 300px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+
+/* =====================================
+   CAROUSEL
+===================================== */
+
+.lafzistan-carousel {
+  width: 100%;
+  max-width: 1100px;
+  margin: 25px auto;
+  padding: 0;
+  background: #191919;
+  overflow: hidden;
+}
+
+.lafzistanSwiper {
+  width: 100%;
+  height: clamp(260px, 55vw, 600px);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #191919;
+}
+
+.lafzistanSwiper .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #191919;
+}
+
+.lafzistanSwiper .swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  cursor: zoom-in;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+
+/* =====================================
+   NAVIGATION BUTTONS
+===================================== */
+
+.lafzistanSwiper .swiper-button-next,
+.lafzistanSwiper .swiper-button-prev {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  color: #191919;
+  transition: 0.3s ease;
+}
+
+.lafzistanSwiper .swiper-button-next::after,
+.lafzistanSwiper .swiper-button-prev::after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.lafzistanSwiper .swiper-button-next:hover,
+.lafzistanSwiper .swiper-button-prev:hover {
+  background: #ddd;
+  transform: scale(1.08);
+}
+
+
+/* =====================================
+   PAGINATION
+===================================== */
+
+.lafzistanSwiper .swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.5;
+}
+
+.lafzistanSwiper .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #fff;
+}
+
+
+/* =====================================
+   BACKGROUND LOADING STATUS
+===================================== */
+
+.background-loading {
+  text-align: center;
+  color: #888;
+  font-size: 11px;
+  padding: 8px;
+  letter-spacing: 1px;
+}
+
+
+/* =====================================
+   FULL SCREEN IMAGE VIEWER
+===================================== */
+
+.lafzistan-image-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.viewer-image {
+  max-width: 95%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.viewer-close {
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #191919;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.viewer-watermark {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  letter-spacing: 5px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viewer-loading {
+  position: absolute;
+  color: #fff;
+  font-size: 13px;
+}
+
+
+/* =====================================
+   MOBILE RESPONSIVE
+===================================== */
+
+@media (max-width: 600px) {
+
+  .lafzistanSwiper {
+    height: 380px;
+    border-radius: 9px;
+  }
+
+  .lafzistan-loader {
+    min-height: 380px;
+  }
+
+  .lafzistanSwiper .swiper-button-next,
+  .lafzistanSwiper .swiper-button-prev {
+    width: 32px;
+    height: 32px;
+  }
+
+  .lafzistanSwiper .swiper-button-next::after,
+  .lafzistanSwiper .swiper-button-prev::after {
+    font-size: 12px;
+  }
+
+  .viewer-image {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .viewer-close {
+    top: 12px;
+    right: 12px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="lafzistan-app">
+
+
+  <!-- =====================================
+       LOADER
+  ====================================== -->
+
+  <div class="lafzistan-loader" v-if="!initialLoadingFinished">
+
+    <div class="loader-content">
+
+      <div class="loader-spinner"></div>
+
+      <h2>LAFZISTAN</h2>
+
+      <p>{{ loadingMessage }}</p>
+
+      <div class="loader-progress">
+
+        <div
+          class="loader-progress-fill"
+          :style="{ width: initialProgress + '%' }"
+        ></div>
+
+      </div>
+
+      <span>{{ initialProgress }}%</span>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================
+       ERROR MESSAGE
+  ====================================== -->
+
+  <div
+    class="lafzistan-error"
+    v-else-if="images.length === 0"
+  >
+
+    <h2>LAFZISTAN</h2>
+
+    <p>Images could not be loaded.</p>
+
+    <p>Please check your image names and location.</p>
+
+  </div>
+
+
+  <!-- =====================================
+       IMAGE CAROUSEL
+  ====================================== -->
+
+  <div
+    class="lafzistan-carousel"
+    v-show="initialLoadingFinished && images.length"
+  >
+
+    <div class="swiper lafzistanSwiper">
+
+      <div class="swiper-wrapper">
+
+        <div
+          class="swiper-slide"
+          v-for="image in images"
+          :key="image.number"
+        >
+
+          <img
+            :src="image.url"
+            :alt="'LAFZISTAN post ' + image.number"
+            decoding="async"
+            draggable="false"
+            @click="openImage(image.url)"
+            @contextmenu.prevent
+          >
+
+        </div>
+
+      </div>
+
+      <!-- NAVIGATION -->
+
+      <div class="swiper-button-prev"></div>
+
+      <div class="swiper-button-next"></div>
+
+      <!-- PAGINATION -->
+
+      <div class="swiper-pagination"></div>
+
+    </div>
+
+
+    <!-- BACKGROUND LOADING -->
+
+    <div
+      class="background-loading"
+      v-if="backgroundLoading"
+    >
+
+      Loading remaining images: {{ backgroundProgress }}%
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================
+       FULL SCREEN IMAGE VIEWER
+  ====================================== -->
+
+  <div
+    class="lafzistan-image-viewer"
+    v-if="selectedImage"
+    @click.self="closeImage"
+    @contextmenu.prevent
+  >
+
+    <button
+      class="viewer-close"
+      @click="closeImage"
+      aria-label="Close image"
+    >
+
+      ×
+
+    </button>
+
+
+    <div class="viewer-loading" v-if="viewerLoading">
+
+      Loading image...
+
+    </div>
+
+
+    <img
+      v-show="!viewerLoading && !viewerError"
+      :src="selectedImage"
+      class="viewer-image"
+      alt="LAFZISTAN"
+      draggable="false"
+      @load="viewerLoading = false"
+      @error="handleViewerError"
+      @contextmenu.prevent
+    >
+
+
+    <div class="viewer-loading" v-if="viewerError">
+
+      Image could not be loaded.
+
+    </div>
+
+
+    <div class="viewer-watermark">
+
+      LAFZISTAN
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================
+     VUE 3 CDN
+===================================== -->
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+
+<!-- =====================================
+     SWIPER JS CDN
+===================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+<!-- =====================================
+     VUE APPLICATION
+===================================== -->
+
+<script>
+
+const { createApp } = Vue;
+
+
+createApp({
+
+  data() {
+
+    return {
+
+      // ORIGINAL IMAGE LOCATION - UNCHANGED
+      imageBaseUrl: "./",
+
+      // ORIGINAL 16 IMAGE FILES
+      images: Array.from(
+
+        { length: 16 },
+
+        (_, index) => ({
+
+          number: index + 1,
+
+          name: `${index + 1}.webp`,
+
+          url: `./${index + 1}.webp`
+
+        })
+
+      ),
+
+      // INITIAL LOADER
+      initialLoadingFinished: false,
+
+      loadedCount: 0,
+
+      initialProgress: 0,
+
+      loadingMessage: "Loading first 4 images...",
+
+      // BACKGROUND LOADING
+      backgroundLoading: false,
+
+      backgroundProgress: 0,
+
+      // VIEWER
+      selectedImage: null,
+
+      viewerLoading: false,
+
+      viewerError: false,
+
+      // SWIPER
+      swiperInstance: null,
+
+      // IMAGE TRACKING
+      loadedImages: new Set(),
+
+      failedImages: new Set(),
+
+      // PREVENT DUPLICATE BACKGROUND LOADING
+      isLoadingBackground: false
+
+    };
+
+  },
+
+
+  methods: {
+
+
+    /* =====================================
+       LOAD ONE IMAGE
+    ====================================== */
+
+    loadSingleImage(image) {
+
+      return new Promise((resolve) => {
+
+        if (this.loadedImages.has(image.number)) {
+
+          resolve(true);
+
+          return;
+
+        }
+
+        if (this.failedImages.has(image.number)) {
+
+          resolve(false);
+
+          return;
+
+        }
+
+        const img = new Image();
+
+        img.onload = () => {
+
+          this.loadedImages.add(image.number);
+
+          resolve(true);
+
+        };
+
+        img.onerror = () => {
+
+          this.failedImages.add(image.number);
+
+          resolve(false);
+
+        };
+
+        img.src = image.url;
+
+      });
+
+    },
+
+
+    /* =====================================
+       FIRST FOUR IMAGES
+       LOAD SEQUENTIALLY
+    ====================================== */
+
+    async loadFirstFour() {
+
+      this.loadingMessage = "Loading first 4 images...";
+
+      for (let i = 0; i < 4; i++) {
+
+        const image = this.images[i];
+
+        await this.loadSingleImage(image);
+
+        this.loadedCount++;
+
+        this.initialProgress = Math.round(
+
+          (this.loadedCount / 4) * 100
+
+        );
+
+      }
+
+      // SHOW CAROUSEL AFTER FIRST FOUR LOAD ATTEMPTS
+
+      this.initialLoadingFinished = true;
+
+      this.$nextTick(() => {
+
+        this.initializeSwiper();
+
+        // START BACKGROUND LOADING
+
+        this.loadRemainingImages();
+
+      });
+
+    },
+
+
+    /* =====================================
+       LOAD REMAINING IMAGES
+       ONE BY ONE IN BACKGROUND
+    ====================================== */
+
+    async loadRemainingImages() {
+
+      if (this.isLoadingBackground) return;
+
+      this.isLoadingBackground = true;
+
+      this.backgroundLoading = true;
+
+      const totalRemaining = 12;
+
+      let completed = 0;
+
+      for (let i = 2; i < this.images.length; i++) {
+
+        const image = this.images[i];
+
+        // WAIT FOR CURRENT IMAGE BEFORE STARTING NEXT
+
+        await this.loadSingleImage(image);
+
+        completed++;
+
+        this.backgroundProgress = Math.round(
+
+          (completed / totalRemaining) * 100
+
+        );
+
+      }
+
+      this.backgroundLoading = false;
+
+      this.isLoadingBackground = false;
+
+    },
+
+
+    /* =====================================
+       SWIPER INITIALIZATION
+    ====================================== */
+
+    initializeSwiper() {
+
+      const slider = document.querySelector(
+
+        "#lafzistan-app .lafzistanSwiper"
+
+      );
+
+      if (!slider || slider.swiper) return;
+
+      this.swiperInstance = new Swiper(slider, {
+
+        slidesPerView: 1,
+
+        spaceBetween: 0,
+
+        speed: 600,
+
+        loop: true,
+
+        autoplay: {
+
+          delay: 4000,
+
+          disableOnInteraction: false,
+
+          pauseOnMouseEnter: true
+
+        },
+
+        navigation: {
+
+          nextEl: slider.querySelector(".swiper-button-next"),
+
+          prevEl: slider.querySelector(".swiper-button-prev")
+
+        },
+
+        pagination: {
+
+          el: slider.querySelector(".swiper-pagination"),
+
+          clickable: true
+
+        },
+
+        keyboard: {
+
+          enabled: true
+
+        },
+
+        grabCursor: true
+
+      });
+
+    },
+
+
+    /* =====================================
+       OPEN IMAGE VIEWER
+    ====================================== */
+
+    openImage(url) {
+
+      this.selectedImage = url;
+
+      this.viewerLoading = true;
+
+      this.viewerError = false;
+
+      document.body.style.overflow = "hidden";
+
+    },
+
+
+    /* =====================================
+       VIEWER ERROR
+    ====================================== */
+
+    handleViewerError() {
+
+      this.viewerLoading = false;
+
+      this.viewerError = true;
+
+    },
+
+
+    /* =====================================
+       CLOSE IMAGE VIEWER
+    ====================================== */
+
+    closeImage() {
+
+      this.selectedImage = null;
+
+      this.viewerLoading = false;
+
+      this.viewerError = false;
+
+      document.body.style.overflow = "";
+
+    },
+
+
+    /* =====================================
+       ESCAPE KEY
+    ====================================== */
+
+    handleEscape(e) {
+
+      if (e.key === "Escape") {
+
+        this.closeImage();
+
+      }
+
+    }
+
+  },
+
+
+  /* =====================================
+     MOUNTED
+  ====================================== */
+
+  async mounted() {
+
+    document.addEventListener(
+
+      "keydown",
+
+      this.handleEscape
+
+    );
+
+    await this.loadFirstFour();
+
+  },
+
+
+  /* =====================================
+     CLEANUP
+  ====================================== */
+
+  beforeUnmount() {
+
+    document.removeEventListener(
+
+      "keydown",
+
+      this.handleEscape
+
+    );
+
+    if (this.swiperInstance) {
+
+      this.swiperInstance.destroy(true, true);
+
+    }
+
+    document.body.style.overflow = "";
+
+  }
+
+}).mount("#lafzistan-app");
+
+
+/* =====================================
+   BASIC IMAGE PROTECTION
+===================================== */
+
+// BLOCK RIGHT CLICK INSIDE GALLERY
+
+document.addEventListener("contextmenu", function(e) {
+
+  if (e.target.closest("#lafzistan-app")) {
+
+    e.preventDefault();
+
+  }
+
+});
+
+
+// BLOCK IMAGE DRAGGING
+
+document.addEventListener("dragstart", function(e) {
+
+  if (
+
+    e.target.tagName === "IMG" &&
+
+    e.target.closest("#lafzistan-app")
+
+  ) {
+
+    e.preventDefault();
+
+  }
+
+});
+
+
+// BLOCK COMMON SHORTCUTS
+
+document.addEventListener("keydown", function(e) {
+
+  const key = e.key.toLowerCase();
+
+  if (
+
+    (e.ctrlKey && ["s", "u"].includes(key)) ||
+
+    (e.ctrlKey && e.shiftKey && key === "i")
+
+  ) {
+
+    e.preventDefault();
+
+  }
+
+});
+
+</script>
+
+</body>
+
+</html>
